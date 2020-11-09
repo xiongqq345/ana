@@ -57,6 +57,8 @@ func init() {
 	rootCmd.AddCommand(
 		NewVersionCommand(),
 		NewTimestampCommand(),
+		NewLenCommand(),
+		NewHistoryCommand(),
 	)
 }
 
