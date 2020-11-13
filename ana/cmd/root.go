@@ -55,6 +55,7 @@ func init() {
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
 	rootCmd.AddCommand(
+		NewRedisCommand(),
 		NewVersionCommand(),
 		NewTimestampCommand(),
 		NewLenCommand(),
@@ -100,6 +101,7 @@ func MustStart() {
 		ExitWithError(ExitError, err)
 	}
 }
+
 //
 //func init() {
 //	cobra.EnablePrefixMatching = true

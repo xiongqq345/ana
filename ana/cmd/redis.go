@@ -23,17 +23,17 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func NewTimestampCommand() *cobra.Command {
+func NewRedisCommand() *cobra.Command {
 	tc := &cobra.Command{
-		Use:   "time",
-		Short: "Conversion between timestamp and time",
-		Run:   timestampCommandFunc,
+		Use:   "redis",
+		Short: "Redis help",
+		Run:   redisCommandFunc,
 	}
 
 	return tc
 }
 
-func timestampCommandFunc(cmd *cobra.Command, args []string) {
+func redisCommandFunc(cmd *cobra.Command, args []string) {
 	if len(args) != 1 {
 		ExitWithError(ExitBadArgs, fmt.Errorf("time command needs only one argument"))
 	}
@@ -58,33 +58,4 @@ func timestampCommandFunc(cmd *cobra.Command, args []string) {
 	fmt.Printf("timestamp(ms): %d\n", tm.UnixNano()/1e6)
 	fmt.Printf("timestamp(μs): %d\n", tm.UnixNano()/1e3)
 	fmt.Printf("timestamp(ns): %d\n", tm.UnixNano())
-}
-
-func checkTimeString(ts string) (tm time.Time, err error) {
-	layouts := []string{
-		"2006-01-02 15:04:05",
-		time.ANSIC,
-		time.UnixDate,
-		time.RubyDate,
-		time.RFC822,
-		time.RFC822Z,
-		time.RFC850,
-		time.RFC1123,
-		time.RFC1123Z,
-		time.RFC3339,
-		time.RFC3339Nano,
-		time.Kitchen,
-		time.Stamp,
-		time.StampMilli,
-		time.StampMicro,
-		time.StampNano,
-	}
-
-	for _, layout := range layouts {
-		tm, err = time.Parse(layout, ts)
-		if err == nil {
-			return tm, nil
-		}
-	}
-	return time.Time{}, fmt.Errorf("unknown time layout")
 }

@@ -16,24 +16,53 @@ limitations under the License.
 package cmd
 
 import (
+	"bytes"
 	"fmt"
+	"strconv"
+	"time"
 
+	"github.com/go-redis/redis"
 	"github.com/spf13/cobra"
 )
 
-var historyNum int16
+var historyNum int64
 
 func NewHistoryCommand() *cobra.Command {
-	lc := &cobra.Command{
+	hc := &cobra.Command{
 		Use:   "history",
 		Short: "Prints the command history",
 		Run:   historyCommandFunc,
 	}
 
-	lc.Flags().Int16VarP(&historyNum, "num", "n", 20, "print last [n] commands")
-	return lc
+	hc.Flags().Int64VarP(&historyNum, "num", "n", 20, "print last [n] commands")
+	return hc
 }
 
 func historyCommandFunc(cmd *cobra.Command, args []string) {
-	fmt.Println(historyNum)
+	rdb := redis.NewClient(&redis.Options{
+		Addr:     "localhost:30637",
+		Password: "", // no password set
+		DB:       0,  // use default DB
+	})
+
+	var buffer bytes.Buffer
+	buffer.WriteString(cmd.CommandPath())
+	if historyNum != 20 {
+		buffer.WriteString(" --num ")
+		buffer.WriteString(strconv.Itoa(int(historyNum)))
+	}
+
+	member := redis.Z{
+		Score:  float64(time.Now().Unix()),
+		Member: buffer.String(),
+	}
+	rdb.ZAdd(commandHistoryKey, member)
+
+	val,err := rdb.ZRevRange(commandHistoryKey,0,historyNum).Result()
+	if err != nil {
+		fmt.Println(fmt.Errorf("redis error: %s",err))
+	}
+	for _,command := range val {
+		fmt.Println(command)
+	}
 }
