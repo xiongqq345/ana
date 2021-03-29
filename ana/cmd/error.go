@@ -14,15 +14,15 @@ const (
 	ExitBadFeature   // provided a valid flag with an unsupported value
 	ExitInterrupted
 	ExitIO
+	ExitRedisError
 	ExitBadArgs = 128
 )
 
 func ExitWithError(code int, err error) {
 	fmt.Fprintln(os.Stderr, "Error:", err)
-	
+
 	//if cerr, ok := err.(*client.ClusterError); ok {
 	//	fmt.Fprintln(os.Stderr, cerr.Detail())
 	//}
 	os.Exit(code)
 }
-

@@ -16,19 +16,27 @@ limitations under the License.
 package cmd
 
 import (
+	"fmt"
+	"strconv"
+
 	"github.com/spf13/cobra"
 )
 
-func NewRedisCommand() *cobra.Command {
-	tc := &cobra.Command{
-		Use:   "redis",
-		Short: "Redis help",
-		Run:   redisCommandFunc,
+func NewHexCommand() *cobra.Command {
+	lc := &cobra.Command{
+		Use:   "hex",
+		Short: "Prints the arguments length",
+		Run:   hexCommandFunc,
 	}
 
-	return tc
+	return lc
 }
 
-func redisCommandFunc(cmd *cobra.Command, args []string) {
+func hexCommandFunc(cmd *cobra.Command, args []string) {
+	if len(args) != 1 {
+		ExitWithError(ExitBadArgs, fmt.Errorf("hex command needs only one argument"))
+	}
 
+	s, _ := strconv.Unquote(`"` + args[0] + `"`)
+	fmt.Println(s)
 }

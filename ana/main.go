@@ -15,7 +15,7 @@ limitations under the License.
 */
 package main
 
-import "main.go/ana/cmd"
+import "ana/ana/cmd"
 
 func main() {
 	cmd.MustStart()

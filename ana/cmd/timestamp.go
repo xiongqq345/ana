@@ -38,29 +38,32 @@ func timestampCommandFunc(cmd *cobra.Command, args []string) {
 		ExitWithError(ExitBadArgs, fmt.Errorf("time command needs only one argument"))
 	}
 
-	var tm time.Time
-	timeArg := args[0]
-	timestamp, err := strconv.ParseInt(timeArg, 10, 64)
+	var t time.Time
+	timeStr := args[0]
+	timestamp, err := strconv.ParseInt(timeStr, 10, 64)
 	if err != nil {
-		tm, err = checkTimeString(timeArg)
-		if err != nil {
+		if t, err = parseTimeString(timeStr); err != nil {
 			ExitWithError(ExitBadArgs, err)
 		}
 	} else {
 		if timestamp < 1e11 {
-			tm = time.Unix(timestamp, 0)
+			t = time.Unix(timestamp, 0)
 		} else {
-			tm = time.Unix(0, timestamp*1e6)
+			t = time.Unix(timestamp/1e3, 0)
 		}
 	}
-	fmt.Printf("time string  : %s\n", tm.Format("2006-01-02 15:04:05"))
-	fmt.Printf("timestamp(s) : %d\n", tm.Unix())
-	fmt.Printf("timestamp(ms): %d\n", tm.UnixNano()/1e6)
-	fmt.Printf("timestamp(μs): %d\n", tm.UnixNano()/1e3)
-	fmt.Printf("timestamp(ns): %d\n", tm.UnixNano())
+	fmt.Printf("time string  : %s\n", t.Format("2006-01-02 15:04:05"))
+	fmt.Printf("timestamp(s) : %d\n", t.Unix())
+	fmt.Printf("timestamp(ms): %d\n", t.UnixNano()/1e6)
+	fmt.Printf("timestamp(μs): %d\n", t.UnixNano()/1e3)
+	fmt.Printf("timestamp(ns): %d\n", t.UnixNano())
 }
 
-func checkTimeString(ts string) (tm time.Time, err error) {
+func parseTimeString(ts string) (tm time.Time, err error) {
+	if ts == "now" {
+		return time.Now(), nil
+	}
+
 	layouts := []string{
 		"2006-01-02 15:04:05",
 		time.ANSIC,
@@ -86,5 +89,6 @@ func checkTimeString(ts string) (tm time.Time, err error) {
 			return tm, nil
 		}
 	}
+
 	return time.Time{}, fmt.Errorf("unknown time layout")
 }

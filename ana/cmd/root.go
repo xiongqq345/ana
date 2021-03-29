@@ -60,6 +60,8 @@ func init() {
 		NewTimestampCommand(),
 		NewLenCommand(),
 		NewHistoryCommand(),
+		NewHexCommand(),
+		NewIdleTimeCommand(),
 	)
 }
 
